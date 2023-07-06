@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import HeartIcon from "@/components/business/HearthIcon";
+import Layout from "@/components/business/Layout";
 import OrangeLayout from "@/components/business/OrangeLayout";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -78,165 +79,176 @@ const ThemePage: NextPage<Props> = ({ questions, name }) => {
 
 	if (isGameOver) {
 		return (
-			<div className="flex items-center justify-center min-h-screen relative">
-				<OrangeLayout
-					title={"Vous avez détruit la terre !"}
-					subtitle={"GAME OVER"}
-				>
-					<iframe
-						src="https://gfycat.com/ifr/BewitchedIlliterateAnnelid"
-						width="640"
-						height="404"
-					/>
-					<p>
-						{" "}
-						<a href="https://gfycat.com/bewitchedilliterateannelid">
-							via Gfycat
-						</a>
-					</p>
-					<Link
-						className={buttonVariants({ variant: "outline" })}
-						href={"/themes"}
+			<Layout>
+				<div className="flex items-center justify-center relative flex-1">
+					<OrangeLayout
+						title={"Vous avez détruit la terre !"}
+						subtitle={"GAME OVER"}
 					>
-						Voir les thèmes
-					</Link>
-				</OrangeLayout>
-			</div>
+						<iframe
+							src="https://gfycat.com/ifr/BewitchedIlliterateAnnelid"
+							width="640"
+							height="404"
+						/>
+						<p>
+							{" "}
+							<a href="https://gfycat.com/bewitchedilliterateannelid">
+								via Gfycat
+							</a>
+						</p>
+						<Link
+							className={buttonVariants({ variant: "outline" })}
+							href={"/themes"}
+						>
+							Voir les thèmes
+						</Link>
+					</OrangeLayout>
+				</div>
+			</Layout>
 		);
 	}
 
 	if (isFinished) {
 		return (
-			<div className="flex items-center justify-center min-h-screen relative">
-				<OrangeLayout
-					title={"Vous avez terminé et garder la terre en vie !"}
-					subtitle={"BRAVO !"}
-				>
-					<div className={"h-32 w-32 self-center"}>
-						<HeartIcon {...getColorsByPoints(points)} />
+			<Layout>
+				<div className="flex items-center flex-1 justify-center relative">
+					<OrangeLayout
+						title={"Vous avez terminé et garder la terre en vie !"}
+						subtitle={"BRAVO !"}
+					>
+						<div className={"h-32 w-32 self-center"}>
+							<HeartIcon {...getColorsByPoints(points)} />
+						</div>
 						<p className="text-center mt-4 font-bold text-lg text-destructive">
 							{points} points sur 100
 						</p>
-					</div>
-					<Link
-						className={buttonVariants({ variant: "outline" })}
-						href={"/themes"}
-					>
-						Voir les thèmes
-					</Link>
-				</OrangeLayout>
-			</div>
+						<Link
+							className={buttonVariants({ variant: "outline" })}
+							href={"/themes"}
+						>
+							Voir les thèmes
+						</Link>
+					</OrangeLayout>
+				</div>
+			</Layout>
 		);
 	}
 
 	return (
-		<div className="flex items-center justify-center min-h-screen relative">
-			<div
-				className={cn(
-					"bg-white rounded-lg p-4 flex flex-col items-center justify-center absolute left-10 gap-2 border-2",
-				)}
-			>
-				<div className={"h-32 w-32"}>
-					<HeartIcon {...getColorsByPoints(points)} />
-				</div>
-				<p className="text-sm font-bold text-black">Garder la terre en vie !</p>
-				<p className="text-sm font-bold text-black">
-					Il vous reste {points} sur 100 points !
-				</p>
-			</div>
-			<OrangeLayout title={currentQuestion.question} subtitle={name}>
-				{isViewSensibility ? (
-					<div className="flex flex-col gap-4">
-						{currentQuestion.responses.map(currentResponse => {
-							return (
-								<div
-									className={cn("flex flex-col gap-2 rounded-lg py-4 px-6", {
-										"bg-green-500 text-green-950":
-											currentResponse?.color === "green",
-										"bg-red-500 text-red-950": currentResponse?.color === "red",
-										"bg-orange-500 text-orange-950":
-											currentResponse?.color === "orange",
-									})}
-									key={currentResponse.label}
-								>
-									<p className="font-bold text-lg">{currentResponse?.label}</p>
-									<p>{currentResponse?.text}</p>
-								</div>
-							);
-						})}
-					</div>
-				) : (
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-8 px-24">
-						{questions.map((question, index) =>
-							question.responses.map(response => (
-								<div
-									className={cn(
-										"flex flex-col items-center gap-2 cursor-pointer hover:bg-black p-4 rounded-lg transition-all duration-300 group hover:text-white",
-										{
-											"bg-black text-white": currentSelected?.includes(
-												response.label,
-											),
-										},
-									)}
-									key={response.label}
-									onClick={() => {
-										setSelected(prev => ({
-											...prev,
-											[index]: !prev?.[index]?.includes(response.label)
-												? [...(prev[index] || []), response.label]
-												: prev[index].filter(p => p !== response.label),
-										}));
-									}}
-								>
-									<img
-										src={"https://picsum.photos/200"}
-										alt={response.label}
-										className="rounded-lg"
-									/>
-									<p className="font-bold self-center ">{response.label}</p>
-								</div>
-							)),
-						)}
-					</div>
-				)}
-				<Button
-					variant={"secondary"}
-					className="self-center font-bold"
-					onClick={() => {
-						if (isViewSensibility) {
-							if (points <= 0) {
-								setIsGameOver(true);
-							} else {
-								if (currentIndex >= questions.length - 1) {
-									setIsFinished(true);
-								} else {
-									setCurrentIndex(prev => prev + 1);
-									setIsViewSensibility(false);
-								}
-							}
-						} else {
-							const responsesSelected = currentSelected.map(selected =>
-								currentQuestion.responses.find(
-									response => response.label === selected,
-								),
-							);
-
-							setPoints(
-								prev =>
-									prev +
-									responsesSelected.reduce(
-										(prev, curr) => prev + (curr?.points || 0),
-										0,
-									),
-							);
-							setIsViewSensibility(true);
-						}
-					}}
+		<Layout>
+			<div className="flex items-center justify-center gap-12 relative">
+				<div
+					className={cn(
+						"bg-white rounded-lg p-4 flex flex-col items-center justify-center gap-2 border-2",
+					)}
 				>
-					{isViewSensibility ? "Continuer" : "Confirmer"}
-				</Button>
-			</OrangeLayout>
-		</div>
+					<div className={"h-32 w-32"}>
+						<HeartIcon {...getColorsByPoints(points)} />
+					</div>
+					<p className="text-sm font-bold text-black">
+						Garder la terre en vie !
+					</p>
+					<p className="text-sm font-bold text-black">
+						Il vous reste {points} sur 100 points !
+					</p>
+				</div>
+				<OrangeLayout title={currentQuestion.question} subtitle={name}>
+					{isViewSensibility ? (
+						<div className="flex flex-col gap-4">
+							{currentQuestion.responses.map(currentResponse => {
+								return (
+									<div
+										className={cn("flex flex-col gap-2 rounded-lg py-4 px-6", {
+											"bg-green-500 text-green-950":
+												currentResponse?.color === "green",
+											"bg-red-500 text-red-950":
+												currentResponse?.color === "red",
+											"bg-orange-500 text-orange-950":
+												currentResponse?.color === "orange",
+										})}
+										key={currentResponse.label}
+									>
+										<p className="font-bold text-lg">
+											{currentResponse?.label}
+										</p>
+										<p>{currentResponse?.text}</p>
+									</div>
+								);
+							})}
+						</div>
+					) : (
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-8 px-24">
+							{questions.map((question, index) =>
+								question.responses.map(response => (
+									<div
+										className={cn(
+											"flex flex-col items-center gap-2 cursor-pointer hover:bg-black p-4 rounded-lg transition-all duration-300 group hover:text-white",
+											{
+												"bg-black text-white": currentSelected?.includes(
+													response.label,
+												),
+											},
+										)}
+										key={response.label}
+										onClick={() => {
+											setSelected(prev => ({
+												...prev,
+												[index]: !prev?.[index]?.includes(response.label)
+													? [...(prev[index] || []), response.label]
+													: prev[index].filter(p => p !== response.label),
+											}));
+										}}
+									>
+										<img
+											src={"https://picsum.photos/200"}
+											alt={response.label}
+											className="rounded-lg"
+										/>
+										<p className="font-bold self-center ">{response.label}</p>
+									</div>
+								)),
+							)}
+						</div>
+					)}
+					<Button
+						variant={"secondary"}
+						className="self-center font-bold"
+						onClick={() => {
+							if (isViewSensibility) {
+								if (points <= 0) {
+									setIsGameOver(true);
+								} else {
+									if (currentIndex >= questions.length - 1) {
+										setIsFinished(true);
+									} else {
+										setCurrentIndex(prev => prev + 1);
+										setIsViewSensibility(false);
+									}
+								}
+							} else {
+								const responsesSelected = currentSelected.map(selected =>
+									currentQuestion.responses.find(
+										response => response.label === selected,
+									),
+								);
+
+								setPoints(
+									prev =>
+										prev +
+										responsesSelected.reduce(
+											(prev, curr) => prev + (curr?.points || 0),
+											0,
+										),
+								);
+								setIsViewSensibility(true);
+							}
+						}}
+					>
+						{isViewSensibility ? "Continuer" : "Confirmer"}
+					</Button>
+				</OrangeLayout>
+			</div>
+		</Layout>
 	);
 };
 

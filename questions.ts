@@ -44,9 +44,9 @@ export const themes: Theme[] = [
 						color: "red",
 						points: -110,
 					},
-					// Ajoutez d'autres réponses pour cette question
 				],
 			},
+
 			// Ajoutez d'autres questions pour ce thème
 		],
 	},
